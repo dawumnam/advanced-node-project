@@ -64,11 +64,19 @@ describe("When logged in", async () => {
   });
 });
 
-const { body } = await fetch("/api/blogs", {
-  method: "POST",
-  credentials: "same-origin",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ title: "My Title", content: "My Content" }),
+describe("User is not logged in", async () => {
+  test("User cannot create blog posts", async () => {
+    const result = await page.evaluate(async () => {
+      const res = await fetch("/api/blogs", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: "My Title", content: "My Content" }),
+      });
+      return res.json();
+    });
+    expect(result.error).toEqual("You must log in!");
+  });
 });
